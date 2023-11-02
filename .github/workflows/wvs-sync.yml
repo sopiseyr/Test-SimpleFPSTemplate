@@ -1,0 +1,26 @@
+name: WVSTrigger
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the branches specified
+  push:
+  pull_request:
+    branches: [ "main", "wvs-sync" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger WVS Pipeline
+        env:
+          WVS_TRIGGER_TOKEN: ${{ secrets.WVS_TRIGGER_TOKEN }}
+          WVS_PROJECT_ID: ${{ secrets.WVS_PROJECT_ID }}
+        run: |
+          echo "Triggering pipeline at https://wvs.io/api/v4/projects/${WVS_PROJECT_ID}/trigger/pipeline"
+          curl -D - -XPOST --fail -F token=${WVS_TRIGGER_TOKEN} -F ref=main https://wvs.io/api/v4/projects/${WVS_PROJECT_ID}/trigger/pipeline
